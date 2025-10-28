@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import {  z } from "zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -84,7 +84,13 @@ export function LoginForm() {
                     type="button"
                     disabled={isPending}
                   >
-                    Continue with GitHub{" "}
+                    <Image
+                      src="/logos/github.svg"
+                      alt="github"
+                      width={20}
+                      height={20}
+                    />
+                    Continue with GitHub
                   </Button>
                   <Button
                     variant="outline"
@@ -92,7 +98,13 @@ export function LoginForm() {
                     type="button"
                     disabled={isPending}
                   >
-                    Continue with Google{" "}
+                    <Image
+                      src="/logos/google.svg"
+                      alt="google"
+                      width={20}
+                      height={20}
+                    />
+                    Continue with Google
                   </Button>
                 </div>
                 <div className="grid gap-6">

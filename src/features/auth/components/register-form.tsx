@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import {  z } from "zod";
+import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -28,7 +28,8 @@ import {
 import { Input } from "@/components/ui/input";
 import { authClient } from "@/lib/auth-client";
 
-const registerSchema = z.object({
+const registerSchema = z
+  .object({
     email: z.email("Please enter a valid email"),
     password: z.string().min(1, "password is required"),
     confirmPassword: z.string(),
@@ -48,28 +49,28 @@ export function RegisterForm() {
     defaultValues: {
       email: "",
       password: "",
-      confirmPassword:""
+      confirmPassword: "",
     },
   });
 
   const onSubmit = async (values: RegisterFormValues) => {
     await authClient.signUp.email(
       {
-        name:values.email,
-        email:values.email,
-        password:values.password,
-        callbackURL:"/",
+        name: values.email,
+        email: values.email,
+        password: values.password,
+        callbackURL: "/",
       },
       {
-        onSuccess:()=>{
-          router.push("/")
+        onSuccess: () => {
+          router.push("/");
         },
-        
-        onError:(ctx)=>{
-          toast.error(ctx.error.message)
-        }
+
+        onError: (ctx) => {
+          toast.error(ctx.error.message);
+        },
       }
-    )
+    );
   };
 
   const isPending = form.formState.isSubmitting;
@@ -92,7 +93,13 @@ export function RegisterForm() {
                     type="button"
                     disabled={isPending}
                   >
-                    Continue with GitHub{" "}
+                    <Image
+                      src="/logos/github.svg"
+                      alt="github"
+                      width={20}
+                      height={20}
+                    />
+                    Continue with GitHub
                   </Button>
                   <Button
                     variant="outline"
@@ -100,7 +107,13 @@ export function RegisterForm() {
                     type="button"
                     disabled={isPending}
                   >
-                    Continue with Google{" "}
+                    <Image
+                      src="/logos/google.svg"
+                      alt="google"
+                      width={20}
+                      height={20}
+                    />
+                    Continue with Google
                   </Button>
                 </div>
                 <div className="grid gap-6">
@@ -161,7 +174,7 @@ export function RegisterForm() {
                 </div>
                 <div className="text-sm text-center">
                   Already have an account?{" "}
-                  <Link href="/signup" className="underline underline-offset-4">
+                  <Link href="/login" className="underline underline-offset-4">
                     Login
                   </Link>
                 </div>
