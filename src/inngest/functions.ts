@@ -5,6 +5,8 @@ import { generateText } from "ai";
 import { createOpenAI } from "@ai-sdk/openai";
 import { createAnthropic } from "@ai-sdk/anthropic";
 
+import * as Sentry from "@sentry/nextjs";
+
 const google = createGoogleGenerativeAI();
 const openai = createOpenAI();
 const anthropic = createAnthropic();
@@ -20,6 +22,11 @@ export const execute = inngest.createFunction(
         model: google("gemini-2.5-flash"),
         system: "",
         prompt: "",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       }
     );
 
@@ -30,6 +37,11 @@ export const execute = inngest.createFunction(
         model: openai("gpt-3.5-turbo"),
         system: "",
         prompt: "",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       }
     );
 
@@ -40,6 +52,11 @@ export const execute = inngest.createFunction(
         model: anthropic("claude-sonnet-4-0"),
         system: "",
         prompt: "",
+        experimental_telemetry: {
+          isEnabled: true,
+          recordInputs: true,
+          recordOutputs: true,
+        },
       }
     );
     return {
