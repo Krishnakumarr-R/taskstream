@@ -1,19 +1,9 @@
-import { Button } from "@/components/ui/button";
-import { authClient } from "@/lib/auth-client";
-import { requireAuth } from "@/lib/auth-utils";
+import React from 'react'
 
-const page = async() => {
-  await requireAuth()
-  const { data } = authClient.useSession();
-
+const page = () => {
   return (
-    <div>
-      {JSON.stringify(data)}
-      { data &&
-      <Button onClick={()=>authClient.signOut()}>logout</Button>
-    }
-    </div>
-  );
-};
+    <div>page</div>
+  )
+}
 
-export default page;
+export default page
