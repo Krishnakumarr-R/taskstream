@@ -3,7 +3,23 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   /* config options here */
+   reactStrictMode: true,
+  async redirects(){
+    return [
+      {
+        source:"/",
+        destination:"/workflows",
+        permanent:false
+      }
+    ]
+  }
 };
+
+const isSentryEnabled = process.env.SENTRY_ENABLED === "true";
+
+module.exports = isSentryEnabled
+  ? withSentryConfig(nextConfig, { silent: true })
+  : nextConfig;
 
 export default withSentryConfig(nextConfig, {
   // For all available options, see:
