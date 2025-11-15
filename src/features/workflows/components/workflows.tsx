@@ -1,9 +1,34 @@
 "use client";
 
-import { EntityContainer, EntityHeader } from "@/components/entity-components";
-import { useSuspenseWorkflows , useCreateWorkflow } from "../hooks/use-workflows";
+import {
+  EntityContainer,
+  EntityHeader,
+  EntityPagination,
+  EntitySearch,
+} from "@/components/entity-components";
+import {
+  useSuspenseWorkflows,
+  useCreateWorkflow,
+} from "../hooks/use-workflows";
 import { useUpgradeModel } from "@/hooks/use-upgrade-modal";
 import { useRouter } from "next/navigation";
+import { useWorkflowsParams } from "../hooks/use-workflows-params";
+import { useEntitySearch } from "@/hooks/use-entity-search";
+
+export const WorkflowSearch = () => {
+  const [params, setParams] = useWorkflowsParams();
+  const { searchValue, onSearchChange } = useEntitySearch({
+    params,
+    setParams,
+  });
+  return (
+    <EntitySearch
+      value={searchValue}
+      onChange={onSearchChange}
+      placeholder="Search workflws"
+    />
+  );
+};
 
 export const WorkFlowsList = () => {
   const workflows = useSuspenseWorkflows();
@@ -17,33 +42,47 @@ export const WorkFlowsList = () => {
 
 export const WorkflowsHeader = ({ disabled }: { disabled?: boolean }) => {
   const createWorkflows = useCreateWorkflow();
-  const {handleEroor,modal} = useUpgradeModel();
-  const router = useRouter()
+  const { handleEroor, modal } = useUpgradeModel();
+  const router = useRouter();
 
-  const handleCreate = ()=>{
-    createWorkflows.mutate(undefined,{
+  const handleCreate = () => {
+    createWorkflows.mutate(undefined, {
       onSuccess(data) {
-        router.push(`/workflows/${data.id}`)
+        router.push(`/workflows/${data.id}`);
       },
-      onError:(error)=>{
-        handleEroor(error)
-      }
-    })
-  }
+      onError: (error) => {
+        handleEroor(error);
+      },
+    });
+  };
 
-  return(
-  <>
-  {modal}
-    <EntityHeader
-      title="Workflows"
-      description="Create and manage your workflows"
-      onNew={handleCreate}
-      newButtonLabel="New Workflow"
-      disabled={disabled}
-      isCreating={createWorkflows.isPending}
+  return (
+    <>
+      {modal}
+      <EntityHeader
+        title="Workflows"
+        description="Create and manage your workflows"
+        onNew={handleCreate}
+        newButtonLabel="New Workflow"
+        disabled={disabled}
+        isCreating={createWorkflows.isPending}
+      />
+    </>
+  );
+};
+
+export const WorkflowsPagination = () => {
+  const workflows = useSuspenseWorkflows();
+  const [params, setParams] = useWorkflowsParams();
+
+  return (
+    <EntityPagination
+      disabled={workflows.isFetching}
+      totalpage={workflows.data.totalPages}
+      page={workflows.data.page}
+      onPageChange={(page) => setParams({ ...params, page })}
     />
-  </>
-  )
+  );
 };
 
 export const WorkflowContainer = ({
@@ -52,7 +91,11 @@ export const WorkflowContainer = ({
   children: React.ReactNode;
 }) => {
   return (
-    <EntityContainer header={<WorkflowsHeader/>} search={<></>} pagination={<></>}>
+    <EntityContainer
+      header={<WorkflowsHeader />}
+      search={<WorkflowSearch />}
+      pagination={<WorkflowsPagination/>}
+    >
       {children}
     </EntityContainer>
   );
