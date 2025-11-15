@@ -13,7 +13,7 @@ export const useSubscription = () => {
     
 }
 
-export const usehasActiveSubscription = ()=>{
+export const useHasActiveSubscription = ()=>{
     const {data : customerState , isLoading ,...rest} = useSubscription();
 
     const hasActiveSubscription = customerState?.activeSubscriptions && customerState.activeSubscriptions.length > 0;

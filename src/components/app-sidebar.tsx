@@ -12,7 +12,6 @@ import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
-  SidebarGroupLabel,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -23,8 +22,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { authClient } from "@/lib/auth-client";
-
-import { usehasActiveSubscription} from "@/features/subscription/hooks/use-subscription";
+import { useHasActiveSubscription } from "@/features/subscription/hooks/use-subscription";
 
 const menuItems = [
   {
@@ -40,7 +38,8 @@ const menuItems = [
 export const AppSidebar = () => {
   const router = useRouter();
   const pathname = usePathname();
-  const  {hasActiveSubscription , isLoading} = usehasActiveSubscription() 
+  const { hasActiveSubscription, isLoading } = useHasActiveSubscription();
+
   return (
     <Sidebar collapsible="icon">
       <SidebarHeader>
@@ -85,29 +84,33 @@ export const AppSidebar = () => {
 
       <SidebarFooter>
         <SidebarMenu>
-          <SidebarMenuItem>
-        {!hasActiveSubscription && !isLoading && (
-            <SidebarMenuButton
-              tooltip="upgrade to pro"
-              className="gap-x-4 h-10 px-4"
-              onClick={()=>authClient.checkout({slug:"pro"})}
-            >
-              <Star className="h-4 w-4" />
-              <span>Upgrade to Pro</span>
-            </SidebarMenuButton>
-            )}
+          {!hasActiveSubscription && !isLoading && (
+            <SidebarMenuItem>
+              <SidebarMenuButton
+                tooltip="Upgrade to Pro"
+                className="gap-x-4 h-10 px-4"
+                onClick={() => authClient.checkout({ slug: "pro" })}
+              >
+                <Star className="h-4 w-4" />
+                <span>Upgrade to Pro</span>
+              </SidebarMenuButton>
+            </SidebarMenuItem>
+          )}
 
+          <SidebarMenuItem>
             <SidebarMenuButton
-              tooltip="billing portal"
+              tooltip="Billing Portal"
               className="gap-x-4 h-10 px-4"
-              onClick={()=>authClient.customer.portal()}
+              onClick={() => authClient.customer.portal()}
             >
               <CreditCard className="h-4 w-4" />
               <span>Billing Portal</span>
             </SidebarMenuButton>
+          </SidebarMenuItem>
 
+          <SidebarMenuItem>
             <SidebarMenuButton
-              tooltip="sign out"
+              tooltip="Sign Out"
               className="gap-x-4 h-10 px-4"
               onClick={async () => {
                 await authClient.signOut();

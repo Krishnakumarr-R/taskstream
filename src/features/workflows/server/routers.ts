@@ -16,7 +16,7 @@ export const workflowsRouter = createTRPCRouter({
       },
     });
   }),
-  rempve: protectedProcedure
+  remove: protectedProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {
       return prisma.workflow.delete({
@@ -68,7 +68,7 @@ export const workflowsRouter = createTRPCRouter({
             },
           },
           orderBy: {
-            updateAt: "desc",
+            updatedAt: "desc",
           },
         }),
         prisma.workflow.count({
