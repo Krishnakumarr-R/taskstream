@@ -1,4 +1,5 @@
 import { PAGINATION } from "@/config/constants";
+import { NodeType } from "@/generated/prisma/enums";
 import prisma from "@/lib/db";
 import {
   createTRPCRouter,
@@ -7,12 +8,21 @@ import {
 } from "@/trpc/init";
 import z from "zod";
 
+import type { Node, Edge } from "@xyflow/react";
+
 export const workflowsRouter = createTRPCRouter({
   create: premiumProcedure.mutation(({ ctx }) => {
     return prisma.workflow.create({
       data: {
         name: "todo",
         userId: ctx.auth.user.id,
+        nodes: {
+          create: {
+            type: NodeType.INITAL,
+            position: { x: 0, y: 0 },
+            name: NodeType.INITAL,
+          },
+        },
       },
     });
   }),
@@ -36,10 +46,33 @@ export const workflowsRouter = createTRPCRouter({
     }),
   getOne: protectedProcedure
     .input(z.object({ id: z.string() }))
-    .query(({ ctx, input }) => {
-      return prisma.workflow.findUniqueOrThrow({
+    .query(async ({ ctx, input }) => {
+      const workflow = await prisma.workflow.findUniqueOrThrow({
         where: { id: input.id, userId: ctx.auth.user.id },
+        include: { nodes: true, connections: true },
       });
+      //Transform server node to react-flow compatible nodes
+      const nodes: Node[] = workflow.nodes.map((node) => ({
+        id: node.id,
+        type: node.type,
+        position: node.position as { x: number; y: number },
+        data: (node.data as Record<string, unknown>) || {},
+      }));
+      //Transform server connection to react-flow compatible Edge
+      const edges: Edge[] = workflow.connections.map((connection) => ({
+        id: connection.id,
+        source: connection.fromNodeId,
+        target: connection.toNodeId,
+        sourceHandle: connection.fromOutput,
+        targetHandle: connection.toInput,
+      }));
+
+      return {
+        id: workflow.id,
+        name: workflow.name,
+        nodes,
+        edges,
+      };
     }),
   getMany: protectedProcedure
     .input(
@@ -81,17 +114,17 @@ export const workflowsRouter = createTRPCRouter({
           },
         }),
       ]);
-      const totalPages = Math.ceil(totalCount/pageSize)
+      const totalPages = Math.ceil(totalCount / pageSize);
       const hasNextPage = page < totalPages;
       const hasPreviousPage = page < 1;
-      return{
+      return {
         items,
         page,
         pageSize,
         totalCount,
         totalPages,
         hasNextPage,
-        hasPreviousPage
-      }
+        hasPreviousPage,
+      };
     }),
 });
